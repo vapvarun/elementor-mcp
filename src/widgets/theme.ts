@@ -335,7 +335,7 @@ export function sitemap(items: SitemapItem[], opts: SitemapOpts = {}): unknown {
 // ─── Archive Posts (Theme Archive) ───────────────────────────────────────────
 
 export interface ArchivePostsOpts {
-  skin?: 'archive_classic' | 'archive_full_content';
+  skin?: 'archive_classic' | 'archive_cards' | 'archive_full_content';
   columns?: number;
   masonry?: boolean;
   thumbnail?: 'top' | 'left' | 'right' | 'none';
@@ -344,27 +344,35 @@ export interface ArchivePostsOpts {
   excerptLength?: number;
   showReadMore?: boolean;
   readMoreText?: string;
-  showMeta?: boolean;
-  paginationType?: '' | 'numbers' | 'prev_next' | 'load_more' | 'infinite_scroll';
+  /** Pass true for default meta (date + comments), or an array of: 'author','date','time','comments','modified' */
+  showMeta?: boolean | string[];
+  paginationType?: '' | 'numbers' | 'prev_next' | 'numbers_and_prev_next' | 'load_more_on_click' | 'load_more_infinite_scroll';
 }
 
 export function archivePosts(opts: ArchivePostsOpts = {}): unknown {
+  const skin = opts.skin ?? 'archive_classic';
+  const p = skin;
+
+  const metaData: string[] = Array.isArray(opts.showMeta)
+    ? opts.showMeta
+    : (opts.showMeta ? ['date', 'comments'] : []);
+
   return {
     id: genId(),
     elType: 'widget',
     widgetType: 'archive-posts',
     ...baseElement(),
     settings: {
-      _skin: opts.skin ?? 'archive_classic',
-      archive_classic_columns: String(opts.columns ?? 3),
-      archive_classic_masonry: opts.masonry ? 'yes' : '',
-      archive_classic_thumbnail: opts.thumbnail ?? 'top',
-      archive_classic_image_size: opts.imageSize ?? 'medium',
-      show_excerpt: opts.showExcerpt !== false ? 'yes' : '',
-      excerpt_length: opts.excerptLength ?? 20,
-      show_read_more: opts.showReadMore !== false ? 'yes' : '',
-      read_more_text: opts.readMoreText ?? 'Read More',
-      show_meta_data: opts.showMeta ? 'yes' : '',
+      _skin: skin,
+      [`${p}_columns`]: String(opts.columns ?? 3),
+      [`${p}_masonry`]: opts.masonry ? 'yes' : '',
+      [`${p}_thumbnail`]: opts.thumbnail ?? 'top',
+      [`${p}_thumbnail_size_size`]: opts.imageSize ?? 'medium',
+      [`${p}_show_excerpt`]: opts.showExcerpt !== false ? 'yes' : '',
+      [`${p}_excerpt_length`]: opts.excerptLength ?? 20,
+      [`${p}_show_read_more`]: opts.showReadMore !== false ? 'yes' : '',
+      [`${p}_read_more_text`]: opts.readMoreText ?? 'Read More »',
+      [`${p}_meta_data`]: metaData,
       pagination_type: opts.paginationType ?? 'numbers',
     },
   };

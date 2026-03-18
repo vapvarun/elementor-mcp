@@ -28,7 +28,7 @@ export function imageCarousel(images: Array<CarouselImage | string>, opts: Image
     settings: {
       carousel: gallery,
       image_size: opts.imageSize ?? 'medium_large',
-      slides_per_view: String(opts.slidesPerView ?? 3),
+      slides_to_show: String(opts.slidesPerView ?? 3),
       autoplay: opts.autoplay !== false ? 'yes' : '',
       pause_on_hover: 'yes',
       autoplay_speed: opts.autoplaySpeed ?? 3000,

@@ -195,47 +195,65 @@ export interface PostsOpts {
   columnsMobile?: number;
   orderBy?: 'date' | 'title' | 'rand' | 'menu_order';
   order?: 'desc' | 'asc';
-  skin?: 'classic' | 'cards' | 'full_content' | 'even_columns';
-  showImage?: boolean;
+  skin?: 'classic' | 'cards' | 'full_content';
+  /** Image position (also controls visibility — 'none' hides image) */
+  imagePosition?: 'top' | 'left' | 'right' | 'none';
   showTitle?: boolean;
   showExcerpt?: boolean;
-  showMeta?: boolean;
+  /** Pass true to show date + comments meta, or an array of: 'author','date','time','comments','modified' */
+  showMeta?: boolean | string[];
   showReadMore?: boolean;
   readMoreText?: string;
-  categories?: number[];
-  tags?: number[];
+  /** Include posts in these term IDs (categories, tags, or any taxonomy) */
+  includeTermIds?: number[];
   excludeIds?: number[];
   imageSize?: 'thumbnail' | 'medium' | 'large' | 'full';
   imageHeight?: number;
   excerptLength?: number;
-  paginationType?: '' | 'numbers' | 'prev_next' | 'load_more' | 'infinite_scroll';
+  paginationType?: '' | 'numbers' | 'prev_next' | 'numbers_and_prev_next' | 'load_more_on_click' | 'load_more_infinite_scroll';
 }
 
 export function posts(opts: PostsOpts = {}): unknown {
+  const skin = opts.skin ?? 'classic';
+  const p = skin; // skin-prefixed control helper
+
+  const metaData: string[] = Array.isArray(opts.showMeta)
+    ? opts.showMeta
+    : (opts.showMeta ? ['date', 'comments'] : []);
+
   const s: Record<string, unknown> = {
-    post_type: opts.postType ?? 'post',
-    posts_per_page: opts.postsPerPage ?? 6,
-    columns: opts.columns ?? 3,
-    columns_tablet: opts.columnsTablet ?? 2,
-    columns_mobile: opts.columnsMobile ?? 1,
-    orderby: opts.orderBy ?? 'date',
-    order: opts.order ?? 'desc',
-    _skin: opts.skin ?? 'classic',
-    show_image: opts.showImage !== false ? 'yes' : '',
-    show_title: opts.showTitle !== false ? 'yes' : '',
-    show_excerpt: opts.showExcerpt !== false ? 'yes' : '',
-    show_meta: opts.showMeta ? 'yes' : '',
-    show_read_more: opts.showReadMore !== false ? 'yes' : '',
-    read_more_text: opts.readMoreText ?? 'Read More',
-    image_size: opts.imageSize ?? 'medium',
-    item_ratio: { unit: '%', size: opts.imageHeight ?? 56.25 },
-    excerpt_length: opts.excerptLength ?? 20,
+    _skin: skin,
+    // Query group controls (prefixed with widget name 'posts')
+    posts_post_type: opts.postType ?? 'post',
+    posts_orderby: opts.orderBy ?? 'date',
+    posts_order: opts.order ?? 'desc',
+    // Pagination (widget-level, not skin-prefixed)
     pagination_type: opts.paginationType ?? '',
+    // Skin controls (prefixed with skin id)
+    [`${p}_posts_per_page`]: opts.postsPerPage ?? 6,
+    [`${p}_columns`]: String(opts.columns ?? 3),
+    [`${p}_columns_tablet`]: String(opts.columnsTablet ?? 2),
+    [`${p}_columns_mobile`]: String(opts.columnsMobile ?? 1),
+    [`${p}_thumbnail`]: opts.imagePosition ?? 'top',
+    [`${p}_thumbnail_size_size`]: opts.imageSize ?? 'medium',
+    [`${p}_item_ratio`]: { unit: '%', size: opts.imageHeight ?? 56.25 },
+    [`${p}_show_title`]: opts.showTitle !== false ? 'yes' : '',
+    [`${p}_show_excerpt`]: opts.showExcerpt !== false ? 'yes' : '',
+    [`${p}_excerpt_length`]: opts.excerptLength ?? 20,
+    [`${p}_show_read_more`]: opts.showReadMore !== false ? 'yes' : '',
+    [`${p}_read_more_text`]: opts.readMoreText ?? 'Read More »',
+    [`${p}_meta_data`]: metaData,
   };
 
-  if (opts.categories?.length) s.select_categories = opts.categories;
-  if (opts.tags?.length) s.select_tags = opts.tags;
-  if (opts.excludeIds?.length) s.exclude_ids = opts.excludeIds.join(',');
+  if (opts.includeTermIds?.length) {
+    s.posts_include = ['terms'];
+    s.posts_include_term_ids = opts.includeTermIds;
+  }
+
+  if (opts.excludeIds?.length) {
+    s.posts_exclude = ['manual_selection'];
+    s.posts_exclude_ids = opts.excludeIds;
+  }
 
   return { id: genId(), elType: 'widget', widgetType: 'posts', ...baseElement(), settings: s };
 }
