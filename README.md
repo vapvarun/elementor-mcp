@@ -825,16 +825,14 @@ Supported platforms: `facebook`, `twitter`, `instagram`, `linkedin`, `youtube`, 
 
 ```json
 {
-  "images": ["https://..."],
+  "images": ["https://...", { "url": "https://...", "caption": "Alt text", "link": "https://..." }],
   "opts": {
-    "slides_to_show": 3,
-    "slides_to_scroll": 1,
+    "slidesPerView": 3,
     "autoplay": true,
-    "autoplaySpeed": 5000,
+    "autoplaySpeed": 3000,
     "loop": true,
-    "navigation": "both | arrows | dots | none",
-    "imageSize": "thumbnail | medium | large | full",
-    "caption": "none | caption | title"
+    "navigation": "arrows | dots | both | none",
+    "imageSize": "thumbnail | medium | large | full"
   }
 }
 ```
@@ -1126,22 +1124,23 @@ Supported platforms: `facebook`, `twitter`, `instagram`, `linkedin`, `youtube`, 
   "columnsMobile": 1,
   "orderBy": "date | title | rand | menu_order",
   "order": "desc | asc",
-  "skin": "classic | cards | full_content | even_columns",
-  "showImage": true,
+  "skin": "classic | cards | full_content",
+  "imagePosition": "top | left | right | none",
   "showTitle": true,
   "showExcerpt": true,
   "showMeta": false,
   "showReadMore": true,
-  "readMoreText": "Read More",
-  "imageSize": "medium",
+  "readMoreText": "Read More »",
+  "imageSize": "thumbnail | medium | large | full",
   "imageHeight": 56.25,
   "excerptLength": 20,
-  "paginationType": "numbers | prev_next | load_more | infinite_scroll",
-  "categories": [1, 2],
-  "tags": [5],
+  "paginationType": "'' | numbers | prev_next | numbers_and_prev_next | load_more_on_click | load_more_infinite_scroll",
+  "includeTermIds": [1, 2, 5],
   "excludeIds": [10]
 }
 ```
+
+> **Note:** `imagePosition: "none"` hides the image. Use `includeTermIds` to filter by category or tag term IDs (both share the same field).
 
 #### `portfolio(opts)`
 
