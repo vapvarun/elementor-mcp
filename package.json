@@ -1,0 +1,37 @@
+{
+  "name": "elementor-mcp",
+  "version": "2.0.0",
+  "description": "MCP server for generating Elementor Pro landing pages and pushing them to WordPress — 106 widgets, color schemes, full theme builder support.",
+  "main": "dist/index.js",
+  "author": "Varun Dubey <varun@wbcomdesigns.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vapvarun/elementor-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "elementor",
+    "wordpress",
+    "landing-page",
+    "page-builder",
+    "model-context-protocol",
+    "ai",
+    "elementor-pro"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.7.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}
