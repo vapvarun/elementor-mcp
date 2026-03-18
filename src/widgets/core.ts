@@ -165,7 +165,7 @@ export function col(settings: ContainerSettings, elements: unknown[]): unknown {
   if (settings.background_color) {
     s.background_background = 'classic';
     s.background_color = settings.background_color;
-    s._border_radius = {
+    s.border_radius = {
       unit: 'px',
       top: String(settings.border_radius ?? 8),
       right: String(settings.border_radius ?? 8),
@@ -176,7 +176,7 @@ export function col(settings: ContainerSettings, elements: unknown[]): unknown {
   }
 
   if (settings.padding) {
-    s._padding = {
+    s.padding = {
       unit: 'px',
       top: settings.padding.top,
       right: settings.padding.right,

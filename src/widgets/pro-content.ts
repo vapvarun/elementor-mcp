@@ -252,9 +252,12 @@ export interface AnimatedHeadlineOpts {
 
 export function animatedHeadline(
   beforeText: string,
-  animatedText: string,
+  animatedText: string | string[],
   opts: AnimatedHeadlineOpts = {}
 ): unknown {
+  const rotatingText = Array.isArray(animatedText) ? animatedText.join('\n') : animatedText;
+  const highlightText = Array.isArray(animatedText) ? animatedText[0] : animatedText;
+
   return {
     id: genId(),
     elType: 'widget',
@@ -265,8 +268,8 @@ export function animatedHeadline(
       animation_type: opts.animationType ?? 'typing',
       marker: opts.marker ?? 'circle',
       before_text: beforeText,
-      highlighted_text: animatedText,
-      rotating_text: animatedText,
+      highlighted_text: highlightText,
+      rotating_text: rotatingText,
       after_text: opts.afterText ?? '',
       loop: opts.loop !== false ? 'yes' : '',
       highlight_iteration_delay: opts.iterationDelay ?? 8000,

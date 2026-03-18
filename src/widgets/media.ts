@@ -14,13 +14,11 @@ export interface ImageCarouselOpts {
   borderRadius?: number;
 }
 
-export function imageCarousel(images: CarouselImage[], opts: ImageCarouselOpts = {}): unknown {
-  const gallery = images.map(img => ({
-    url: img.url,
-    id: '',
-    size: '',
-    ...(img.caption && { caption: img.caption }),
-  }));
+export function imageCarousel(images: Array<CarouselImage | string>, opts: ImageCarouselOpts = {}): unknown {
+  const gallery = images.map(img => {
+    if (typeof img === 'string') return { url: img, id: '', size: '' };
+    return { url: img.url, id: '', size: '', ...(img.caption && { caption: img.caption }) };
+  });
 
   return {
     id: genId(),

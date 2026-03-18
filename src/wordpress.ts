@@ -86,16 +86,40 @@ function loadSites(): Record<string, SiteConfig> {
 
   for (const p of paths) {
     if (existsSync(p)) {
-      const raw = JSON.parse(readFileSync(p, 'utf-8'));
-      // Normalize: sites.json may have array or object format
+      const raw = JSON.parse(readFileSync(p, 'utf-8')) as Record<string, unknown>;
       const normalized: Record<string, SiteConfig> = {};
-      const items = Array.isArray(raw) ? raw : Object.values(raw);
-      for (const site of items as Record<string, string>[]) {
-        if (site.site_id || site.id) {
-          normalized[site.site_id ?? site.id] = {
-            url: site.url ?? site.site_url,
+
+      // Three supported formats:
+      // 1. { "sites": [...] }  — wp-blog-mcp-server format
+      // 2. [...]               — bare array
+      // 3. { "id": { ... } }  — object keyed by site ID (README format)
+      let items: Record<string, string>[];
+
+      if (!Array.isArray(raw) && raw.sites && Array.isArray(raw.sites)) {
+        // Format 1: { "sites": [...] }
+        items = raw.sites as Record<string, string>[];
+      } else if (Array.isArray(raw)) {
+        // Format 2: bare array
+        items = raw as Record<string, string>[];
+      } else {
+        // Format 3: object keyed by site ID — each value IS the site config
+        for (const [key, val] of Object.entries(raw)) {
+          const s = val as Record<string, string>;
+          if (s.url && s.username && (s.app_password ?? s.password)) {
+            normalized[key] = { url: s.url, username: s.username, password: s.app_password ?? s.password };
+          }
+        }
+        siteRegistry = normalized;
+        return normalized;
+      }
+
+      for (const site of items) {
+        const siteId = site.id ?? site.site_id;
+        if (siteId && site.url && site.username && (site.app_password ?? site.password)) {
+          normalized[siteId] = {
+            url: site.url,
             username: site.username,
-            password: site.password ?? site.app_password,
+            password: site.app_password ?? site.password,
           };
         }
       }
